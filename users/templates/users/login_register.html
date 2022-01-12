@@ -36,7 +36,7 @@
         </form>
         <div class="auth__alternative">
             <p>Already have an Account?</p>
-            <a href="{% url 'login' %}">Sign Up</a>
+            <a href="{% url 'login' %}">Log In</a>
         </div>
     </div>
 </div>
@@ -79,7 +79,7 @@
             </div>
             <div class="auth__actions">
                 <input class="btn btn--sub btn--lg" type="submit" value="Log In"/>
-                <a href="forgetpassword.html">Forget Password?</a>
+                <a href="{% url 'password_reset' %}">Forget Password?</a>
             </div>
         </form>
         <div class="auth__alternative">
