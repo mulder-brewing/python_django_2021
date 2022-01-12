@@ -30,6 +30,25 @@ class Project(models.Model):
     def __str__(self):
         return self.title
 
+    class Meta:
+        ordering = ['-vote_ratio', '-vote_total']
+
+    @property
+    def reviewers(self):
+        return self.review_set.all().values_list('owner__id', flat=True)
+
+    @property
+    def update_vote_count_ratio(self):
+        reviews = self.review_set.all()
+        up_votes = reviews.filter(value='up').count()
+        total_votes = reviews.count()
+
+        ratio = up_votes / total_votes * 100
+
+        self.vote_total = total_votes
+        self.vote_ratio = ratio
+        self.save()
+
 
 class Review(models.Model):
     VOTE_TYPE = (
@@ -37,12 +56,15 @@ class Review(models.Model):
         ('down', 'Down Vote')
     )
 
-    # owner
+    owner = models.ForeignKey(Profile, null=True, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     body = models.TextField(null=True, blank=True)
     value = models.CharField(max_length=2000, choices=VOTE_TYPE)
     created = models.DateTimeField(auto_now_add=True)
     id = models.UUIDField(default=uuid.uuid4, unique=True, primary_key=True, editable=False)
+
+    class Meta:
+        unique_together = [['owner', 'project']]
 
     def __str__(self):
         return self.value
